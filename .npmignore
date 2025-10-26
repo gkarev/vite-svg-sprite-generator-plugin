@@ -24,3 +24,7 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Documentation (not needed in package)
+PUBLISH.md
+GIT_AUTH_FIX.md

@@ -2,20 +2,20 @@
   "name": "vite-svg-sprite-generator-plugin",
   "version": "1.1.1",
   "description": "Production-ready Vite plugin for automatic SVG sprite generation with HMR support, SVGO optimization, and security features",
-  "main": "vite-svg-sprite-plugin.js",
-  "module": "vite-svg-sprite-plugin.js",
-  "types": "vite-svg-sprite-plugin.d.ts",
+  "main": "vite-svg-sprite-generator-plugin.js",
+  "module": "vite-svg-sprite-generator-plugin.js",
+  "types": "vite-svg-sprite-generator-plugin.d.ts",
   "exports": {
     ".": {
-      "types": "./vite-svg-sprite-plugin.d.ts",
-      "import": "./vite-svg-sprite-plugin.js",
-      "require": "./vite-svg-sprite-plugin.js"
+      "types": "./vite-svg-sprite-generator-plugin.d.ts",
+      "import": "./vite-svg-sprite-generator-plugin.js",
+      "require": "./vite-svg-sprite-generator-plugin.js"
     }
   },
   "files": [
-    "vite-svg-sprite-plugin.js",
-    "vite-svg-sprite-plugin.ts",
-    "vite-svg-sprite-plugin.d.ts",
+    "vite-svg-sprite-generator-plugin.js",
+    "vite-svg-sprite-generator-plugin.ts",
+    "vite-svg-sprite-generator-plugin.d.ts",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
@@ -43,12 +43,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/german-schneck/vite-svg-sprite-generator-plugin.git"
+    "url": "https://github.com/gkarev/vite-svg-sprite-generator-plugin.git"
   },
   "bugs": {
-    "url": "https://github.com/german-schneck/vite-svg-sprite-generator-plugin/issues"
+    "url": "https://github.com/gkarev/vite-svg-sprite-generator-plugin/issues"
   },
-  "homepage": "https://github.com/german-schneck/vite-svg-sprite-generator-plugin#readme",
+  "homepage": "https://github.com/gkarev/vite-svg-sprite-generator-plugin#readme",
   "peerDependencies": {
     "vite": "^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0"
   },

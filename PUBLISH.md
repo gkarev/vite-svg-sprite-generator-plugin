@@ -64,8 +64,7 @@ npm pack
 
 Установите пакет локально в тестовом проекте:
 ```bash
-# В папке npm-package
-npm pack
+# В папке vite-svg-sprite-generator-pluginnpm pack
 
 # В тестовом проекте
 npm install ../path/to/vite-svg-sprite-generator-plugin-1.1.1.tgz
@@ -76,9 +75,7 @@ npm install ../path/to/vite-svg-sprite-generator-plugin-1.1.1.tgz
 ### Публикация в основной реестр NPM
 
 ```bash
-# Убедитесь, что вы в папке npm-package
-cd npm-package
-
+# Убедитесь, что вы в папке vite-svg-sprite-generator-plugincd vite-svg-sprite-generator-plugin
 # Публикация
 npm publish
 ```
