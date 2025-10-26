@@ -11,10 +11,13 @@
 - ⚡ **Hot Module Replacement** - Instant updates without page reload during development
 - 🔒 **Security First** - Built-in XSS protection and path traversal prevention
 - 💾 **Smart Caching** - Efficient caching with mtime-based validation
-- 🎯 **Auto-Injection** - Automatic sprite injection into HTML
+- 🎯 **Auto-Injection** - Sprite is automatically injected into HTML as inline SVG (no separate file)
+- 📄 **Inline SVG** - Sprite is inserted directly into the page DOM, no external requests
 - 🔧 **Fully Configurable** - Extensive customization options
 - 📦 **Zero Config** - Works out of the box with sensible defaults
 - 🌳 **Tree-Shakeable** - ES modules with proper exports
+- 🎨 **Vite Standard Compliance** - Fully complies with Vite plugin API and ecosystem standards
+- 🔄 **Uses Vite Utilities** - Leverages `vite.normalizePath` for consistent cross-platform path handling
 
 ## 📦 Installation
 
@@ -91,6 +94,45 @@ src/
 ```
 
 That's it! 🎉
+
+## 🎨 How It Works
+
+The plugin automatically **injects the sprite directly into your HTML** as an inline SVG element. 
+
+✅ **No separate file generated** - Sprite is embedded in the page DOM  
+✅ **No external requests** - Everything works in a single HTTP request  
+✅ **Automatic injection** - Sprite appears in HTML automatically  
+✅ **Fast rendering** - Icons display immediately, no loading delay  
+
+### Where is the sprite?
+
+Look for this in your HTML:
+
+```html
+<svg id="icon-sprite" class="svg-sprite" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="home">...</symbol>
+    <symbol id="user">...</symbol>
+  </defs>
+</svg>
+```
+
+The sprite is **injected at the end of your HTML** (just before `</body>` tag).
+
+## 🎨 Vite Compliance
+
+This plugin is built with maximum compliance to Vite standards and best practices:
+
+- ✅ **Official Vite Plugin API** - Implements all required hooks (`buildStart`, `buildEnd`, `configureServer`, `handleHotUpdate`)
+- ✅ **Uses Vite Internal Utilities** - Leverages `vite.normalizePath` for cross-platform path normalization
+- ✅ **Vite HMR Integration** - Properly integrates with Vite's HMR system for instant updates
+- ✅ **Vite Config Integration** - Respects all Vite configuration options (mode, command, etc.)
+- ✅ **Async/Await Standards** - Uses modern async patterns following Vite conventions
+- ✅ **TypeScript Support** - Full TypeScript definitions for better DX
+- ✅ **No Breaking Changes** - Follows semantic versioning and Vite ecosystem standards
+- ✅ **Zero Vite Configuration Override** - Doesn't interfere with other Vite plugins or features
+
+The plugin seamlessly integrates into your Vite workflow without any conflicts.
 
 ## 📖 Documentation
 
@@ -280,35 +322,6 @@ Advanced SVG sanitization with precompiled RegExp patterns:
 </svg>
 ```
 
-### CSS Styling
-
-```css
-/* Basic styling */
-.icon {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-
-/* Color variants */
-.icon-primary {
-  fill: #007bff;
-}
-
-.icon-danger {
-  fill: #dc3545;
-}
-
-/* With transitions */
-.icon {
-  transition: fill 0.3s ease;
-}
-
-.icon:hover {
-  fill: #0056b3;
-}
-```
-
 ### React/Vue/Svelte
 
 ```jsx
@@ -359,6 +372,8 @@ defineProps(['name']);
 </svg>
 ```
 
+---
+
 ## 📊 Performance
 
 ### Optimization Results
@@ -379,117 +394,16 @@ sun.svg      : 305 → 287 bytes (-5.9%)
 
 **Average reduction: 40-50%** 🎉
 
-## 🔧 Advanced Features
-
-### HMR Support
-
-The plugin includes built-in Hot Module Replacement support:
-
-- ✅ Add new icons → instant update
-- ✅ Modify icons → instant update
-- ✅ Delete icons → instant update
-- ✅ No page reload needed
-
-### Security Features
-
-- ✅ XSS protection (removes `<script>` tags)
-- ✅ Event handler removal
-- ✅ JavaScript URL filtering
-- ✅ Path traversal prevention
-- ✅ File size limits (5MB max)
-
-### Caching
-
-- ✅ LRU-like cache with mtime validation
-- ✅ Automatic cache invalidation
-- ✅ Memory-efficient (max 500 entries)
-
-### Duplicate Detection
-
-```
-⚠️  Duplicate symbol ID detected: icon-home from home.svg
-```
-
-Automatic detection and handling of duplicate IDs.
-
-## 🐛 Troubleshooting
-
-### Icons Not Showing
-
-1. Check that sprite is injected:
-```javascript
-document.getElementById('icon-sprite')
-```
-
-2. Verify icon ID (default - no prefix):
-```html
-<use href="#home"></use>        <!-- Correct (default) -->
-<use href="#icon-home"></use>   <!-- Only if you set idPrefix: 'icon' -->
-```
-
-3. Check console for errors
-
-4. Inspect sprite to see actual symbol IDs:
-```javascript
-document.querySelectorAll('#icon-sprite symbol')
-```
-
-### SVGO Not Installed Warning
-
-If you see:
-```
-⚠️  SVGO not installed. Optimization disabled.
-```
-
-**Option 1 - Install SVGO (recommended for production):**
-```bash
-npm install -D svgo
-```
-
-**Option 2 - Disable the warning:**
-```javascript
-svgSpritePlugin({
-  svgoOptimize: false  // Don't try to use SVGO
-})
-```
-
-**Option 3 - Ignore it:**
-The plugin works fine without SVGO! The warning is just informational.
-
-### SVGO Issues
-
-If icons look broken after SVGO optimization:
-
-```javascript
-svgSpritePlugin({
-  svgoOptimize: false  // Disable temporarily
-})
-```
-
-Or use safer config:
-
-```javascript
-svgoConfig: {
-  plugins: [
-    'preset-default',
-    { name: 'removeViewBox', active: false }
-  ]
-}
-```
-
-### HMR Not Working
-
-Ensure `watch: true` is set:
-
-```javascript
-svgSpritePlugin({
-  watch: true  // Should be enabled by default
-})
-```
-
 ## 📝 Changelog
 
-### v1.1.0 (2025-10-26)
+### v1.1.1 (2025-10-26)
+
+- 🔧 **Using `vite.normalizePath`** - Better cross-platform compatibility
+- ⚡ Improved Windows/Unix path handling
+- 🐛 Better edge case support (network paths, etc.)
+- ✅ **No Breaking Changes** - Fully backward compatible
+
+### v1.1.0 (2025-10-25)
 
 - 🔒 **Path Traversal Protection** - Secure path validation
 - ⚡ **100% Async FS** - No event loop blocking
@@ -497,59 +411,24 @@ svgSpritePlugin({
 - 📝 **Better Errors** - Detailed messages with examples
 - ✅ **No Breaking Changes** - Fully backward compatible
 
-### v3.2.0 (2025-10-26)
+### v1.0.1 (2025-10-24)
 
-- 🎉 **SVGO is now OPTIONAL** - Plugin works without it!
-- 📦 Smaller installation (~1.5 MB saved without SVGO)
-- ✨ Automatic SVGO detection with graceful fallback
-- 🔄 Dynamic import - SVGO loaded only when available
-- ⚡ No breaking changes
+- 📚 **Documentation Updates** - Clarified inline SVG behavior
+- 📄 Added "How It Works" section
+- 💡 Added "Why Inline SVG?" section explaining benefits
 
-### v3.1.1 (2025-10-26)
+### v1.0.0 (2025-10-23)
 
-- 🔄 Changed default `idPrefix` to empty string
-- Symbol IDs are now just filenames (e.g., `home` instead of `icon-home`)
+- 🎉 **Initial Release** - Production-ready Vite plugin
+- 🚀 SVGO Optimization - 40-60% size reduction
+- ⚡ Hot Module Replacement - Instant updates
+- 🔒 Security First - XSS protection and path traversal prevention
+- 💾 Smart Caching - LRU-like cache with mtime validation
+- 🎯 Auto-Injection - Automatic sprite injection into HTML
+- 📦 Zero Config - Works out of the box
+- 🌳 Tree-Shakeable - ES modules with proper exports
 
-### v3.1.0 (2025-10-26)
-
-- ✨ Added SVGO optimization support
-- ✨ Automatic optimization in production
-- ✨ Configurable SVGO settings
-- 🐛 Fixed memory leak in configureServer
-- 📚 Improved documentation
-
-### v3.0.2 (2025-10-26)
-
-- 🐛 Critical memory leak fix
-- 🔒 Enhanced security measures
-- ⚡ Performance improvements
-
-### v3.0.0
-
-- ✨ Complete rewrite with TypeScript
-- ✨ HMR support
-- ✨ Security features
-- ✨ Smart caching
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/german-schneck/vite-svg-sprite-generator-plugin.git
-
-# Install dependencies
-npm install
-
-# Run tests
-npm test
-
-# Build
-npm run build
-```
+For the complete changelog, see [CHANGELOG.md](CHANGELOG.md)
 
 ## 📄 License
 
@@ -562,8 +441,8 @@ MIT © Karev G.S.
 
 ## 📧 Support
 
-- 🐛 [Issues](https://github.com/german-schneck/vite-svg-sprite-generator-plugin/issues)
-- 💬 [Discussions](https://github.com/german-schneck/vite-svg-sprite-generator-plugin/discussions)
+- 🐛 [Issues](https://github.com/gkarev/vite-svg-sprite-generator-plugin/issues)
+- 💬 [Discussions](https://github.com/gkarev/vite-svg-sprite-generator-plugin/discussions)
 
 ---
 

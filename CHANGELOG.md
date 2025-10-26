@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [1.1.0] - 2025-10-26
+## [1.1.0] - 2025-10-25
 
 ### 🔒 Security
 
@@ -91,7 +91,19 @@ No changes required for existing users. All improvements are transparent.
 
 ---
 
-## [1.0.0] - 2025-10-26
+## [1.0.1] - 2025-10-24
+
+### 🎨 Documentation & Improvements
+
+- **IMPROVED:** Updated README with inline SVG behavior documentation
+- **ADDED:** Clarification that sprite is injected into page DOM
+- **ADDED:** "How It Works" section in README
+- **ADDED:** "Why Inline SVG?" section explaining benefits
+- **IMPROVED:** Better documentation of sprite injection behavior
+
+---
+
+## [1.0.0] - 2025-10-23
 
 ### 🎉 Initial Release
 

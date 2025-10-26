@@ -1,6 +1,6 @@
 /**
  * Vite SVG Sprite Plugin - TypeScript Definitions (Production-Ready)
- * @version 3.1.0 - SVGO optimization integration
+ * @version 1.1.1 - Cross-platform path handling with vite.normalizePath
  */
 
 import type { Plugin } from 'vite';
@@ -39,8 +39,9 @@ export interface SvgSpritePluginOptions {
   idPrefix?: string;
 
   /**
-   * Оптимизировать SVG (будущая функция)
+   * Enable optimization (legacy option)
    * @default true
+   * @deprecated Use svgoOptimize instead for better control
    */
   optimize?: boolean;
 
@@ -91,7 +92,7 @@ export interface SpriteIcon {
  * @example
  * ```ts
  * import { defineConfig } from 'vite';
- * import svgSpritePlugin from './vite-svg-sprite-plugin';
+ * import svgSpritePlugin from 'vite-svg-sprite-generator-plugin';
  * 
  * export default defineConfig({
  *   plugins: [
