@@ -1,0 +1,26 @@
+# Development files
+*.test.js
+__test_temp__/
+*.md.backup
+
+# Source maps
+*.map
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
