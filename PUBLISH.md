@@ -51,9 +51,9 @@ npm pack
 В `package.json` указаны файлы для публикации:
 ```json
 "files": [
-  "vite-svg-sprite-plugin.js",
-  "vite-svg-sprite-plugin.ts",
-  "vite-svg-sprite-plugin.d.ts",
+  "vite-svg-sprite-generator-plugin.js",
+  "vite-svg-sprite-generator-plugin.ts",
+  "vite-svg-sprite-generator-plugin.d.ts",
   "README.md",
   "LICENSE",
   "CHANGELOG.md"
