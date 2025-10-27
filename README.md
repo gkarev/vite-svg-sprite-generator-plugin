@@ -109,15 +109,13 @@ The plugin automatically **injects the sprite directly into your HTML** as an in
 Look for this in your HTML:
 
 ```html
-<svg id="icon-sprite" class="svg-sprite" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <symbol id="home">...</symbol>
-    <symbol id="user">...</symbol>
-  </defs>
+<svg id="icon-sprite" class="svg-sprite" style="display: none;">
+    <symbol id="home" viewBox="0 0 24 24">...</symbol>
+    <symbol id="user" viewBox="0 0 24 24">...</symbol>
 </svg>
 ```
 
-The sprite is **injected at the end of your HTML** (just before `</body>` tag).
+The sprite is **injected at the start of your HTML** (just after `<body>` tag).
 
 ## 🎨 Vite Compliance
 
