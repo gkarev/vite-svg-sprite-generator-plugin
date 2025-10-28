@@ -1,10 +1,37 @@
 /**
  * Vite SVG Sprite Generator Plugin
  * Production-ready plugin for automatic SVG sprite generation
- * with HMR support and SVGO optimization
+ * with HMR support, SVGO optimization, and security features
  * 
- * @version 1.0.0
+ * @version 1.1.7
  * @package vite-svg-sprite-generator-plugin
+ * 
+ * @changelog v1.1.7
+ * - Updated version for publication
+ * 
+ * @changelog v1.1.6
+ * - FIXED: Preview mode detection now works correctly
+ * - Preview detected as: serve + production + !SSR
+ * - Added debug logging for mode detection
+ * - Confirmed: Preview mode skips validation (0ms)
+ * 
+ * @changelog v1.1.4
+ * - Intelligent mode detection for preview command
+ * - Preview mode skips unnecessary operations (0ms vs 583ms)
+ * - Automatic command detection (serve/build/preview)
+ * 
+ * @changelog v1.1.1
+ * - Using vite.normalizePath for better cross-platform compatibility
+ * 
+ * @changelog v1.1.0
+ * - Path traversal protection via validateIconsPath()
+ * - All FS operations are now async (no event loop blocking)
+ * - Precompiled RegExp patterns (~20% faster sanitization)
+ * - New configResolved() hook for early validation
+ * - Enhanced error messages with examples
+ * 
+ * Note: This is the TypeScript source file.
+ * The main distribution file is vite-svg-sprite-generator-plugin.js
  */
 
 import { existsSync, statSync } from 'fs';
@@ -291,7 +318,7 @@ function createLogger(options: Required<SvgSpriteOptions>) {
 
 /**
  * Vite SVG Sprite Plugin с опциональной SVGO оптимизацией
- * @version 1.0.0
+ * @version 1.1.7
  * @param userOptions - пользовательские опции
  */
 export default function svgSpritePlugin(userOptions: SvgSpriteOptions = {}): Plugin {

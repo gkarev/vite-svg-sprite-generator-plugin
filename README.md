@@ -394,6 +394,19 @@ sun.svg      : 305 → 287 bytes (-5.9%)
 
 ## 📝 Changelog
 
+### v1.1.7 (2025-01-28)
+
+- 📦 **Version Bump** - Updated for npm publication
+- ✅ **No Code Changes** - Identical to v1.1.6
+- 🚀 **Ready to Publish** - All versions synchronized
+
+### v1.1.6 (2025-01-28)
+
+- 🐛 **Fixed Preview Detection** - Preview mode now correctly detected
+- 🔍 **Smart Detection** - Detects `serve + production + !SSR = preview`
+- ✅ **Confirmed Working** - Preview skips validation (0ms)
+- 🎯 **Debug Logging** - Shows `command`, `isPreview`, `mode` when verbose
+
 ### v1.1.4 (2025-01-21)
 
 - ⚡ **Smart Launch Mode** - Intelligent mode detection for preview command

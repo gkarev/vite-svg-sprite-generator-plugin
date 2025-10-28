@@ -1,6 +1,6 @@
 {
   "name": "vite-svg-sprite-generator-plugin",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "description": "Production-ready Vite plugin for automatic SVG sprite generation with HMR support, SVGO optimization, and security features",
   "main": "vite-svg-sprite-generator-plugin.js",
   "module": "vite-svg-sprite-generator-plugin.js",

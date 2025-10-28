@@ -23,13 +23,13 @@
 
 ### 1. Проверьте версию в package.json
 
-Текущая версия: **1.1.4**
+Текущая версия: **1.1.7**
 
 Для новой публикации измените версию:
 ```bash
-npm version patch  # 1.1.4 → 1.1.5
-npm version minor  # 1.1.4 → 1.2.0
-npm version major  # 1.1.4 → 2.0.0
+npm version patch  # 1.1.7 → 1.1.8
+npm version minor  # 1.1.7 → 1.2.0
+npm version major  # 1.1.7 → 2.0.0
 ```
 
 ### 2. Проверьте содержимое пакета
@@ -44,7 +44,7 @@ npm pack --dry-run
 npm pack
 ```
 
-Это создаст файл `vite-svg-sprite-generator-plugin-1.1.4.tgz`
+Это создаст файл `vite-svg-sprite-generator-plugin-1.1.7.tgz`
 
 ### 3. Проверьте файлы в package.json
 
@@ -67,7 +67,7 @@ npm pack
 # В папке vite-svg-sprite-generator-pluginnpm pack
 
 # В тестовом проекте
-npm install ../path/to/vite-svg-sprite-generator-plugin-1.1.4.tgz
+npm install ../path/to/vite-svg-sprite-generator-plugin-1.1.7.tgz
 ```
 
 ## 🚀 Публикация
@@ -106,8 +106,8 @@ npm publish --access public
 
 3. **Создайте Git тег**
    ```bash
-   git tag v1.1.4
-   git push origin v1.1.4
+   git tag v1.1.7
+   git push origin v1.1.7
    ```
 
 4. **Обновите CHANGELOG.md** для следующей версии
@@ -136,7 +136,7 @@ npm publish --access public
 **⚠️ Внимание:** Отменить публикацию можно только в течение 72 часов!
 
 ```bash
-npm unpublish vite-svg-sprite-generator-plugin@1.1.4
+npm unpublish vite-svg-sprite-generator-plugin@1.1.7
 ```
 
 Для удаления всех версий (использовать с осторожностью):

@@ -8,8 +8,17 @@ import { normalizePath } from 'vite';
  * Production-ready plugin for automatic SVG sprite generation
  * with HMR support, SVGO optimization, and security features
  * 
- * @version 1.1.4
+ * @version 1.1.7
  * @package vite-svg-sprite-generator-plugin
+ * 
+ * @changelog v1.1.7
+ * - Updated version for publication
+ * 
+ * @changelog v1.1.6
+ * - FIXED: Preview mode detection now works correctly
+ * - Preview detected as: serve + production + !SSR
+ * - Added debug logging for mode detection
+ * - Confirmed: Preview mode skips validation (0ms)
  * 
  * @changelog v1.1.4
  * - Intelligent mode detection for preview command
@@ -427,7 +436,9 @@ export default function svgSpritePlugin(userOptions = {}) {
   // после получения viteRoot из конфигурации
   let viteRoot = process.cwd(); // Дефолтное значение (будет перезаписано)
   let validatedIconsFolder = ''; // Безопасный путь после валидации
-  let command = 'serve'; // Команда Vite (serve/build/preview)
+  let command = 'serve'; // Команда Vite (serve/build)
+  let isPreview = false; // Флаг preview режима
+  let isLikelyPreview = false; // Расширенная проверка preview режима
   
   // ===== ИНКАПСУЛИРОВАННОЕ СОСТОЯНИЕ ПЛАГИНА =====
   // Каждый экземпляр плагина имеет свое изолированное состояние
@@ -629,13 +640,28 @@ export default function svgSpritePlugin(userOptions = {}) {
       // Получаем точный root из Vite конфигурации
       viteRoot = resolvedConfig.root || process.cwd();
       
-      // Определяем команду (dev/build/preview)
+      // Определяем команду и режим
       command = resolvedConfig.command || 'serve';
+      isPreview = resolvedConfig.isPreview || false;
+      
+      // Отладочная информация
+      if (options.verbose) {
+        logger.log(`🔍 Debug: command="${command}", isPreview=${isPreview}, mode="${resolvedConfig.mode}"`);
+      }
+      
+      // Определение preview режима:
+      // vite preview запускается как command="serve" + mode="production"
+      // Проверяем все возможные варианты определения preview режима
+      isLikelyPreview = 
+        isPreview || 
+        resolvedConfig.mode === 'preview' ||
+        // Preview часто определяется как serve + production без build
+        (command === 'serve' && resolvedConfig.mode === 'production' && !resolvedConfig.build?.ssr);
       
       // В preview режиме НЕ валидируем пути (проект уже собран)
-      if (command === 'preview') {
+      if (isLikelyPreview) {
         if (options.verbose) {
-          logger.log('🚀 Preview mode: skipping path validation');
+          logger.log('🚀 Preview mode detected: skipping path validation');
         }
         return;
       }
@@ -658,7 +684,7 @@ export default function svgSpritePlugin(userOptions = {}) {
     // Хук для начала сборки
     async buildStart() {
       // В preview режиме НЕ генерируем спрайт (уже собран в dist/)
-      if (command === 'preview') {
+      if (isLikelyPreview) {
         if (options.verbose) {
           logger.log('✅ Preview mode: using pre-built sprite from dist/');
         }

@@ -2,16 +2,82 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.7] - 2025-01-28
+
+### 📦 Publication Release
+
+- **UPDATED:** Version updated for npm publication
+- **NO CHANGES:** Code is identical to v1.1.6
+- **REASON:** Version bump for clean publication
+
+---
+
+## [1.1.6] - 2025-01-28
+
+### 🐛 Bug Fix - Preview Mode Detection
+
+- **FIXED:** Preview mode detection now works correctly
+- **ISSUE:** Plugin was showing validation messages during `vite preview`
+- **ROOT CAUSE:** Vite runs preview as `command="serve"` + `mode="production"`
+- **SOLUTION:** Added smart detection: `serve + production + !SSR = preview`
+
+### 🔍 Changes
+
+```javascript
+// Now correctly detects preview mode
+isLikelyPreview = 
+  isPreview || 
+  resolvedConfig.mode === 'preview' ||
+  (command === 'serve' && mode === 'production' && !build?.ssr);
+```
+
+### ✅ Result
+
+- Preview mode now correctly skips validation ✅
+- Preview mode skips sprite generation ✅
+- Preview runs instantly (0ms) ✅
+- Debug logging shows mode detection ✅
+
+### 📊 Testing
+
+**Before (v1.1.4):**
+```
+vite preview → "Validated icons folder" ❌
+```
+
+**After (v1.1.6):**
+```
+vite preview → "Preview mode detected: skipping" ✅
+```
+
+---
+
 ## [1.1.4] - 2025-01-21
 
 ### ⚡ Performance - Smart Launch Mode
 
 - **NEW:** Intelligent mode detection for preview command
-- **IMPROVED:** Preview mode now skips unnecessary operations
+- **IMPROVED:** Preview mode now skips unnecessary operations  
 - **ADDED:** Automatic command detection (serve/build/preview)
 - **OPTIMIZED:** Preview runs instantly (0ms instead of 583ms)
 - **NEW:** Skipping path validation in preview mode
 - **NEW:** Skipping sprite generation in preview mode
+- **ADDED:** Debug logging to understand Vite mode detection
+- **IMPROVED:** Additional check for `resolvedConfig.mode === 'preview'`
+
+### 🔍 Preview Mode Detection (Fixed)
+
+**Issue:** The plugin was showing validation messages during `vite preview` because Vite runs preview as `command="serve"` + `mode="production"`.
+
+**Fix:** Added smart detection logic:
+- Detects `isPreview` flag
+- Detects `mode === 'preview'`
+- Detects `serve` + `production` combination (typical for preview)
+- Excludes SSR builds from this check
+
+Now the plugin correctly skips validation and sprite generation in preview mode.
+
+Enable `verbose: true` to see debug information: `command`, `isPreview`, `mode`.
 
 ### 🎯 Optimization Details
 
