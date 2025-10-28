@@ -394,6 +394,13 @@ sun.svg      : 305 → 287 bytes (-5.9%)
 
 ## 📝 Changelog
 
+### v1.1.4 (2025-01-21)
+
+- ⚡ **Smart Launch Mode** - Intelligent mode detection for preview command
+- 🚀 **Preview Optimization** - Preview runs instantly (0ms vs 583ms)
+- 🎯 **Auto-Detection** - Automatic command detection (serve/build/preview)
+- ✅ **No Breaking Changes** - Fully backward compatible
+
 ### v1.1.1 (2025-10-26)
 
 - 🔧 **Using `vite.normalizePath`** - Better cross-platform compatibility

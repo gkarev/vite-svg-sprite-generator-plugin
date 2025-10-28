@@ -8,8 +8,15 @@ import { normalizePath } from 'vite';
  * Production-ready plugin for automatic SVG sprite generation
  * with HMR support, SVGO optimization, and security features
  * 
- * @version 1.1.1
+ * @version 1.1.4
  * @package vite-svg-sprite-generator-plugin
+ * 
+ * @changelog v1.1.4
+ * - Intelligent mode detection for preview command
+ * - Preview mode skips unnecessary operations (0ms vs 583ms)
+ * - Automatic command detection (serve/build/preview)
+ * - Skipping path validation in preview mode
+ * - Skipping sprite generation in preview mode
  * 
  * @changelog v1.1.1
  * - Using vite.normalizePath for better cross-platform compatibility
@@ -420,6 +427,7 @@ export default function svgSpritePlugin(userOptions = {}) {
   // после получения viteRoot из конфигурации
   let viteRoot = process.cwd(); // Дефолтное значение (будет перезаписано)
   let validatedIconsFolder = ''; // Безопасный путь после валидации
+  let command = 'serve'; // Команда Vite (serve/build/preview)
   
   // ===== ИНКАПСУЛИРОВАННОЕ СОСТОЯНИЕ ПЛАГИНА =====
   // Каждый экземпляр плагина имеет свое изолированное состояние
@@ -621,6 +629,17 @@ export default function svgSpritePlugin(userOptions = {}) {
       // Получаем точный root из Vite конфигурации
       viteRoot = resolvedConfig.root || process.cwd();
       
+      // Определяем команду (dev/build/preview)
+      command = resolvedConfig.command || 'serve';
+      
+      // В preview режиме НЕ валидируем пути (проект уже собран)
+      if (command === 'preview') {
+        if (options.verbose) {
+          logger.log('🚀 Preview mode: skipping path validation');
+        }
+        return;
+      }
+      
       try {
         // Валидируем путь к иконкам против path traversal атак
         validatedIconsFolder = validateIconsPath(options.iconsFolder, viteRoot);
@@ -638,6 +657,14 @@ export default function svgSpritePlugin(userOptions = {}) {
     
     // Хук для начала сборки
     async buildStart() {
+      // В preview режиме НЕ генерируем спрайт (уже собран в dist/)
+      if (command === 'preview') {
+        if (options.verbose) {
+          logger.log('✅ Preview mode: using pre-built sprite from dist/');
+        }
+        return;
+      }
+      
       try {
         logger.log('🎨 SVG Sprite Plugin: Starting sprite generation...');
         

@@ -1,6 +1,6 @@
 {
   "name": "vite-svg-sprite-generator-plugin",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Production-ready Vite plugin for automatic SVG sprite generation with HMR support, SVGO optimization, and security features",
   "main": "vite-svg-sprite-generator-plugin.js",
   "module": "vite-svg-sprite-generator-plugin.js",
@@ -43,7 +43,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gkarev/vite-svg-sprite-generator-plugin.git"
+    "url": "git+https://github.com/gkarev/vite-svg-sprite-generator-plugin.git"
   },
   "bugs": {
     "url": "https://github.com/gkarev/vite-svg-sprite-generator-plugin/issues"
