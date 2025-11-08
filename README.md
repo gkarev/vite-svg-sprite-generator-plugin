@@ -2,6 +2,10 @@
 
 > Production-ready Vite plugin for automatic SVG sprite generation with HMR, tree-shaking, and SVGO optimization
 
+**The Problem:** Using separate SVG files creates multiple HTTP requests. Inline SVG in HTML duplicates code and bloats your markup. Creating and maintaining SVG sprites manually is tedious and error-prone.
+
+**The Solution:** This plugin automatically generates an optimized SVG sprite from your icons folder and injects it directly into HTML. Works in **dev mode with HMR** — edit an icon → see changes instantly without page reload. Tree-shaking removes unused icons in production (up to 84% reduction).
+
 [![npm version](https://img.shields.io/npm/v/vite-svg-sprite-generator-plugin.svg)](https://www.npmjs.com/package/vite-svg-sprite-generator-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Vite](https://img.shields.io/badge/Vite-4%20%7C%205%20%7C%206%20%7C%207-646CFF?logo=vite)](https://vitejs.dev/)
