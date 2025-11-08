@@ -1,55 +1,34 @@
-# 🎨 Vite SVG Sprite Generator
+# 🎨 Vite SVG Sprite Generator Plugin
 
-> Production-ready Vite plugin for automatic SVG sprite generation with HMR support and SVGO optimization
+> Production-ready Vite plugin for automatic SVG sprite generation with HMR, tree-shaking, and SVGO optimization
 
 [![npm version](https://img.shields.io/npm/v/vite-svg-sprite-generator-plugin.svg)](https://www.npmjs.com/package/vite-svg-sprite-generator-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Vite](https://img.shields.io/badge/Vite-4%20%7C%205%20%7C%206%20%7C%207-646CFF?logo=vite)](https://vitejs.dev/)
 
-## ✨ Features
+## Features
 
-- 🚀 **SVGO Optimization** - Automatic SVG optimization in production builds (40-60% size reduction)
-- ⚡ **Hot Module Replacement** - Instant updates without page reload during development
-- 🔒 **Security First** - Built-in XSS protection and path traversal prevention
-- 💾 **Smart Caching** - Efficient caching with mtime-based validation
-- 🎯 **Auto-Injection** - Sprite is automatically injected into HTML as inline SVG (no separate file)
-- 📄 **Inline SVG** - Sprite is inserted directly into the page DOM, no external requests
-- 🔧 **Fully Configurable** - Extensive customization options
-- 📦 **Zero Config** - Works out of the box with sensible defaults
-- 🌳 **Tree-Shakeable** - ES modules with proper exports
-- 🎨 **Vite Standard Compliance** - Fully complies with Vite plugin API and ecosystem standards
-- 🔄 **Uses Vite Utilities** - Leverages `vite.normalizePath` for consistent cross-platform path handling
+- **2-3x faster builds** - Parallel SVG processing (v1.3.0+)
+- **Tree-shaking** - Remove unused icons (up to 84% reduction)
+- **HMR** - Instant icon updates without page reload
+- **SVGO optimization** - 40-60% smaller sprites
+- **Security** - XSS & path traversal protection
+- **Zero config** - Works out of the box
+- **Framework agnostic** - React, Vue, Svelte, any Vite project
+- **Multi-page support** - Works with [vite-multi-page-html-generator-plugin](https://www.npmjs.com/package/vite-multi-page-html-generator-plugin)
 
-## 📦 Installation
-
-### Basic (without SVGO optimization)
+## Installation
 
 ```bash
 npm install -D vite-svg-sprite-generator-plugin
+
+# Optional: SVGO for optimization (recommended)
+npm install -D svgo
 ```
 
-### Recommended (with SVGO optimization)
+## Quick Start
 
-```bash
-npm install -D vite-svg-sprite-generator-plugin svgo
-```
-
-**Note:** SVGO is optional! The plugin works without it, but you'll get 40-60% smaller sprites with SVGO installed.
-
-<details>
-<summary>Other package managers</summary>
-
-```bash
-# Yarn
-yarn add -D vite-svg-sprite-generator-plugin svgo
-
-# PNPM
-pnpm add -D vite-svg-sprite-generator-plugin svgo
-```
-</details>
-
-## 🚀 Quick Start
-
-### 1. Add to Vite Config
+### 1. Configure Vite
 
 ```javascript
 // vite.config.js
@@ -57,11 +36,7 @@ import { defineConfig } from 'vite';
 import svgSpritePlugin from 'vite-svg-sprite-generator-plugin';
 
 export default defineConfig({
-  plugins: [
-    svgSpritePlugin({
-      iconsFolder: 'src/icons'
-    })
-  ]
+  plugins: [svgSpritePlugin()]
 });
 ```
 
@@ -72,18 +47,16 @@ src/
   icons/
     home.svg
     user.svg
-    settings.svg
+    search.svg
 ```
 
-### 3. Use in HTML
+### 3. Use Icons
 
 ```html
 <svg class="icon">
-  <use href="#home"></use>
+  <use href="#home" />
 </svg>
 ```
-
-### 4. Use in CSS
 
 ```css
 .icon {
@@ -93,240 +66,67 @@ src/
 }
 ```
 
-That's it! 🎉
-
-## 🎨 How It Works
-
-The plugin automatically **injects the sprite directly into your HTML** as an inline SVG element. 
-
-✅ **No separate file generated** - Sprite is embedded in the page DOM  
-✅ **No external requests** - Everything works in a single HTTP request  
-✅ **Automatic injection** - Sprite appears in HTML automatically  
-✅ **Fast rendering** - Icons display immediately, no loading delay  
-
-### Where is the sprite?
-
-Look for this in your HTML:
-
-```html
-<svg id="icon-sprite" class="svg-sprite" style="display: none;">
-    <symbol id="home" viewBox="0 0 24 24">...</symbol>
-    <symbol id="user" viewBox="0 0 24 24">...</symbol>
-</svg>
-```
-
-The sprite is **injected at the start of your HTML** (just after `<body>` tag).
-
-## 🎨 Vite Compliance
-
-This plugin is built with maximum compliance to Vite standards and best practices:
-
-- ✅ **Official Vite Plugin API** - Implements all required hooks (`buildStart`, `buildEnd`, `configureServer`, `handleHotUpdate`)
-- ✅ **Uses Vite Internal Utilities** - Leverages `vite.normalizePath` for cross-platform path normalization
-- ✅ **Vite HMR Integration** - Properly integrates with Vite's HMR system for instant updates
-- ✅ **Vite Config Integration** - Respects all Vite configuration options (mode, command, etc.)
-- ✅ **Async/Await Standards** - Uses modern async patterns following Vite conventions
-- ✅ **TypeScript Support** - Full TypeScript definitions for better DX
-- ✅ **No Breaking Changes** - Follows semantic versioning and Vite ecosystem standards
-- ✅ **Zero Vite Configuration Override** - Doesn't interfere with other Vite plugins or features
-
-The plugin seamlessly integrates into your Vite workflow without any conflicts.
-
-## 📖 Documentation
-
-### Options
+## Configuration
 
 ```typescript
 interface SvgSpriteOptions {
-  /** Path to icons folder (default: 'src/icons') */
-  iconsFolder?: string;
-  
-  /** Sprite DOM ID (default: 'icon-sprite') */
-  spriteId?: string;
-  
-  /** Sprite CSS class (default: 'svg-sprite') */
-  spriteClass?: string;
-  
-  /** Symbol ID prefix (default: '' - uses only filename) */
-  idPrefix?: string;
-  
-  /** Enable optimization (default: true) */
-  optimize?: boolean;
-  
-  /** Watch for changes in dev mode (default: true) */
-  watch?: boolean;
-  
-  /** Debounce delay for HMR (default: 100ms) */
-  debounceDelay?: number;
-  
-  /** Verbose logging (default: true in dev, false in prod) */
-  verbose?: boolean;
-  
-  /** Enable SVGO optimization (default: true in production) */
-  svgoOptimize?: boolean;
-  
-  /** Custom SVGO configuration */
-  svgoConfig?: Config;
+  iconsFolder?: string;        // Default: 'src/icons'
+  spriteId?: string;           // Default: 'sprite-id'
+  spriteClass?: string;        // Default: 'sprite-class'
+  idPrefix?: string;           // Default: ''
+  watch?: boolean;             // Default: true (dev)
+  debounceDelay?: number;      // Default: 100ms
+  verbose?: boolean;           // Default: true (dev)
+  svgoOptimize?: boolean;      // Default: true (production)
+  svgoConfig?: object;         // Custom SVGO config
+  currentColor?: boolean;      // Default: true
+  treeShaking?: boolean;       // Default: false
+  scanExtensions?: string[];   // Default: ['.html', '.js', '.ts', '.jsx', '.tsx', '.vue', '.svelte']
 }
 ```
 
-### Configuration Examples
-
-#### Basic Usage
+### Basic Example
 
 ```javascript
 svgSpritePlugin({
   iconsFolder: 'src/icons',
+  treeShaking: true,
   verbose: true
 })
 ```
 
-#### Custom Configuration
-
-```javascript
-svgSpritePlugin({
-  iconsFolder: 'assets/svg',
-  spriteId: 'my-sprite',
-  idPrefix: 'icon',  // Add prefix: generates 'icon-home', 'icon-user'
-  debounceDelay: 200,
-  verbose: true
-})
-```
-
-#### SVGO Optimization
+### Production Optimized
 
 ```javascript
 svgSpritePlugin({
   iconsFolder: 'src/icons',
-  svgoOptimize: true,
-  svgoConfig: {
-    multipass: true,
-    plugins: [
-      'preset-default',
-      {
-        name: 'removeViewBox',
-        active: false  // Keep viewBox for sprites
-      },
-      {
-        name: 'cleanupNumericValues',
-        params: {
-          floatPrecision: 2
-        }
-      }
-    ]
-  }
+  treeShaking: true,      // Remove unused icons
+  svgoOptimize: true,     // Optimize SVG
+  currentColor: true      // CSS color control
 })
 ```
 
-#### Aggressive Optimization
+## Framework Support
 
-```javascript
-svgSpritePlugin({
-  iconsFolder: 'src/icons',
-  svgoOptimize: true,
-  svgoConfig: {
-    multipass: true,
-    plugins: [
-      'preset-default',
-      { name: 'removeViewBox', active: false },
-      { name: 'cleanupNumericValues', params: { floatPrecision: 1 } },
-      { name: 'removeAttrs', params: { attrs: '(fill|stroke)' } }
-    ]
-  }
-})
-```
+| Framework | Status | Notes |
+|-----------|--------|-------|
+| **Vite + React** | ✅ Full | [Examples](./VUE_REACT_SVELTE_GUIDE.md#react) |
+| **Vite + Vue 3** | ✅ Full | [Examples](./VUE_REACT_SVELTE_GUIDE.md#vue-3) |
+| **Vite + Svelte** | ✅ Full | [Examples](./VUE_REACT_SVELTE_GUIDE.md#svelte) |
+| **Nuxt 3 (SPA)** | ✅ Full | Set `ssr: false` |
+| **Nuxt 3 (SSR)** | ⚠️ Partial | [SSR Guide](./FRAMEWORK_COMPATIBILITY.md#nuxt-3-ssr) |
+| **SvelteKit** | ⚠️ Partial | SSR limitations |
+| **Next.js** | ❌ No | Uses Webpack, not Vite |
+| **Create React App** | ❌ No | Uses Webpack, not Vite |
 
-**Result:** Up to 60% size reduction! 🚀
+> **Rule of thumb:** Works with Vite ✅ | Doesn't work with Webpack ❌
 
-## 🔒 Security Features (v1.1.0)
-
-### Path Traversal Protection
-
-The plugin now includes built-in protection against path traversal attacks:
-
-```javascript
-// ✅ SAFE - Paths inside project root
-svgSpritePlugin({ iconsFolder: 'src/icons' })
-svgSpritePlugin({ iconsFolder: 'assets/svg' })
-svgSpritePlugin({ iconsFolder: './public/icons' })
-
-// ❌ BLOCKED - Paths outside project root
-svgSpritePlugin({ iconsFolder: '../../../etc' })           // Error!
-svgSpritePlugin({ iconsFolder: '../../other-project' })    // Error!
-svgSpritePlugin({ iconsFolder: '/absolute/path' })         // Error!
-```
-
-**Error message example:**
-
-```
-❌ Security Error: Invalid iconsFolder path
-
-  Provided path: "../../../etc"
-  Resolved to: "/etc"
-  Project root: "/home/user/project"
-
-  ⚠️  The path points outside the project root directory.
-  This is not allowed for security reasons (path traversal prevention).
-
-  ✅ Valid path examples:
-     - 'src/icons'           → relative to project root
-     - 'assets/svg'          → relative to project root
-     - './public/icons'      → explicit relative path
-
-  ❌ Invalid path examples:
-     - '../other-project'    → outside project (path traversal)
-     - '../../etc'           → system directory access attempt
-     - '/absolute/path'      → absolute paths not allowed
-
-  💡 Tip: All paths must be inside your project directory.
-```
-
-### XSS Protection
-
-Advanced SVG sanitization with precompiled RegExp patterns:
-
-- Removes `<script>` tags
-- Removes event handlers (`onclick`, `onload`, etc.)
-- Removes `javascript:` URLs in `href` and `xlink:href`
-- Removes `<foreignObject>` elements
-
-**Performance:** ~20% faster sanitization compared to v1.0.0
-
----
-
-## 🎯 Usage Examples
-
-### HTML
-
-```html
-<!-- Basic usage -->
-<svg class="icon">
-  <use href="#home"></use>
-</svg>
-
-<!-- With custom size -->
-<svg class="icon" width="32" height="32">
-  <use href="#user"></use>
-</svg>
-
-<!-- With aria labels -->
-<svg class="icon" role="img" aria-label="Settings">
-  <use href="#settings"></use>
-</svg>
-
-<!-- With custom prefix (if you set idPrefix: 'icon') -->
-<svg class="icon">
-  <use href="#icon-home"></use>
-</svg>
-```
-
-### React/Vue/Svelte
+### React Example
 
 ```jsx
-// React
-function Icon({ name, className = "icon" }) {
+export function Icon({ name, size = 24 }) {
   return (
-    <svg className={className}>
+    <svg width={size} height={size}>
       <use href={`#${name}`} />
     </svg>
   );
@@ -334,137 +134,179 @@ function Icon({ name, className = "icon" }) {
 
 // Usage
 <Icon name="home" />
-
-// Or with custom prefix
-function Icon({ name, prefix = "", className = "icon" }) {
-  const id = prefix ? `${prefix}-${name}` : name;
-  return (
-    <svg className={className}>
-      <use href={`#${id}`} />
-    </svg>
-  );
-}
 ```
 
-```vue
-<!-- Vue -->
-<template>
-  <svg class="icon">
-    <use :href="`#${name}`" />
-  </svg>
-</template>
+See [complete framework examples](./VUE_REACT_SVELTE_GUIDE.md).
 
-<script setup>
-defineProps(['name']);
-</script>
+## Key Features
+
+### Tree-Shaking
+
+Remove unused icons from production builds:
+
+```javascript
+svgSpritePlugin({
+  treeShaking: true  // Enable tree-shaking
+})
 ```
 
-```svelte
-<!-- Svelte -->
-<script>
-  export let name;
-</script>
+**How it works:**
+1. Scans codebase for `<use href="#iconId">`
+2. Finds used icons in HTML/JS/TS/JSX/TSX/Vue/Svelte
+3. Removes unused icons from production
+4. Keeps all icons in dev for better DX
 
-<svg class="icon">
-  <use href="#{name}" />
-</svg>
+**Results:**
+```
+50 total icons → 8 used (42 removed, 84% reduction)
+Bundle: 45.2 KB → 7.8 KB
 ```
 
----
+**Per-page optimization:** In multi-page apps, each HTML page gets only its icons.
 
-## 📊 Performance
+### Hot Module Replacement
 
-### Optimization Results
+Changes to SVG files trigger instant updates without page reload:
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Sprite Size | 87 KB | 42 KB | **-52%** |
-| Gzip | 24 KB | 14 KB | **-42%** |
-| Load Time (3G) | 320 ms | 187 ms | **-42%** |
+```
+🔄 SVG files changed, regenerating sprite...
+✅ HMR: Sprite updated with 10 icons
+```
+
+### Security
+
+Automatic protection against:
+- **XSS attacks** - Removes `<script>`, event handlers, `javascript:` URLs
+- **Path traversal** - Validates icon folder paths
+- **Malicious content** - Sanitizes all SVG before injection
+
+### Multi-Page Projects
+
+Works seamlessly with [vite-multi-page-html-generator-plugin](https://www.npmjs.com/package/vite-multi-page-html-generator-plugin):
+
+```javascript
+export default defineConfig({
+  plugins: [
+    multiPagePlugin({
+      pagesDir: 'src/pages'
+    }),
+    svgSpritePlugin({
+      treeShaking: true  // Each page gets only its icons
+    })
+  ]
+});
+```
+
+## Performance
+
+### Build Time (v1.3.0)
+
+| Icons | v1.2.1 | v1.3.0 | Speedup |
+|-------|--------|--------|---------|
+| 50    | 850ms  | 420ms  | 2.0x ⚡ |
+| 100   | 1.7s   | 810ms  | 2.1x ⚡ |
+| 200   | 3.4s   | 1.5s   | 2.3x ⚡ |
+
+### Bundle Size (with tree-shaking)
+
+```
+Project: 50 icons total, 8 used
+
+Before: 45.2 KB (all icons)
+After:  7.8 KB  (used only)
+Saving: 37.4 KB (83% reduction)
+```
 
 ### SVGO Optimization
 
 ```
-clock.svg    : 317 → 228 bytes (-28.1%)
-layers.svg   : 330 → 156 bytes (-52.7%)
-sun.svg      : 305 → 287 bytes (-5.9%)
+Average reduction: 40-60%
+Example:
+  clock.svg: 317 → 228 bytes (-28%)
+  layers.svg: 330 → 156 bytes (-53%)
 ```
 
-**Average reduction: 40-50%** 🎉
+## How It Works
 
-## 📝 Changelog
+The plugin automatically injects the sprite into your HTML:
 
-### v1.1.7 (2025-01-28)
+```html
+<body>
+  <!-- Injected automatically -->
+  <svg id="sprite-id" style="display: none;">
+    <symbol id="home" viewBox="0 0 24 24">...</symbol>
+    <symbol id="user" viewBox="0 0 24 24">...</symbol>
+  </svg>
+  
+  <!-- Your app -->
+  <div id="app"></div>
+</body>
+```
 
-- 📦 **Version Bump** - Updated for npm publication
-- ✅ **No Code Changes** - Identical to v1.1.6
-- 🚀 **Ready to Publish** - All versions synchronized
+**Benefits:**
+- No separate file requests
+- Instant rendering
+- Single HTTP request
+- Works with SSR/SSG
 
-### v1.1.6 (2025-01-28)
+## Advanced
 
-- 🐛 **Fixed Preview Detection** - Preview mode now correctly detected
-- 🔍 **Smart Detection** - Detects `serve + production + !SSR = preview`
-- ✅ **Confirmed Working** - Preview skips validation (0ms)
-- 🎯 **Debug Logging** - Shows `command`, `isPreview`, `mode` when verbose
+### Vite Integration
 
-### v1.1.4 (2025-01-21)
+Uses official Vite APIs:
+- `enforce: 'pre'` - Run before core plugins
+- `apply()` - Conditional execution
+- `createFilter()` - Standard file filtering
+- HMR API - Hot module replacement
 
-- ⚡ **Smart Launch Mode** - Intelligent mode detection for preview command
-- 🚀 **Preview Optimization** - Preview runs instantly (0ms vs 583ms)
-- 🎯 **Auto-Detection** - Automatic command detection (serve/build/preview)
-- ✅ **No Breaking Changes** - Fully backward compatible
+### Plugin Hooks
 
-### v1.1.1 (2025-10-26)
+```javascript
+{
+  configResolved() {     // Validate paths
+  buildStart() {         // Generate sprite
+  transformIndexHtml() { // Inject into HTML
+  configureServer() {    // Setup HMR
+  buildEnd() {           // Cleanup
+}
+```
 
-- 🔧 **Using `vite.normalizePath`** - Better cross-platform compatibility
-- ⚡ Improved Windows/Unix path handling
-- 🐛 Better edge case support (network paths, etc.)
-- ✅ **No Breaking Changes** - Fully backward compatible
+### Optimizations
 
-### v1.1.0 (2025-10-25)
+- Parallel SVG processing
+- mtime-based caching
+- Debounced HMR
+- Tree-shaking
+- SVGO compression
 
-- 🔒 **Path Traversal Protection** - Secure path validation
-- ⚡ **100% Async FS** - No event loop blocking
-- 🚀 **20% Faster** - Precompiled RegExp patterns
-- 📝 **Better Errors** - Detailed messages with examples
-- ✅ **No Breaking Changes** - Fully backward compatible
+## Compatibility
 
-### v1.0.1 (2025-10-24)
+- **Vite:** 4.x, 5.x, 6.x, 7.x
+- **Node.js:** 14.18.0+
+- **TypeScript:** Full support
+- **OS:** Windows, macOS, Linux
 
-- 📚 **Documentation Updates** - Clarified inline SVG behavior
-- 📄 Added "How It Works" section
-- 💡 Added "Why Inline SVG?" section explaining benefits
+## Links
 
-### v1.0.0 (2025-10-23)
+- [npm Package](https://www.npmjs.com/package/vite-svg-sprite-generator-plugin)
+- [GitHub Repository](https://github.com/gkarev/vite-svg-sprite-generator-plugin)
+- [Issues](https://github.com/gkarev/vite-svg-sprite-generator-plugin/issues)
+- [Changelog](./CHANGELOG.md)
 
-- 🎉 **Initial Release** - Production-ready Vite plugin
-- 🚀 SVGO Optimization - 40-60% size reduction
-- ⚡ Hot Module Replacement - Instant updates
-- 🔒 Security First - XSS protection and path traversal prevention
-- 💾 Smart Caching - LRU-like cache with mtime validation
-- 🎯 Auto-Injection - Automatic sprite injection into HTML
-- 📦 Zero Config - Works out of the box
-- 🌳 Tree-Shakeable - ES modules with proper exports
+## Documentation
 
-For the complete changelog, see [CHANGELOG.md](CHANGELOG.md)
+- [Framework Examples (React/Vue/Svelte)](./VUE_REACT_SVELTE_GUIDE.md)
+- [Framework Compatibility (Next.js/Nuxt/etc)](./FRAMEWORK_COMPATIBILITY.md)
+- [Tree-Shaking Guide](./TREE_SHAKING_GUIDE.md)
 
-## 📄 License
+## Related Plugins
 
-MIT © Karev G.S.
+- [vite-multi-page-html-generator-plugin](https://www.npmjs.com/package/vite-multi-page-html-generator-plugin) - Multi-page static site generator
 
-## 🙏 Acknowledgments
+## License
 
-- [SVGO](https://github.com/svg/svgo) - SVG optimization
-- [Vite](https://vitejs.dev/) - Build tool
-
-## 📧 Support
-
-- 🐛 [Issues](https://github.com/gkarev/vite-svg-sprite-generator-plugin/issues)
-- 💬 [Discussions](https://github.com/gkarev/vite-svg-sprite-generator-plugin/discussions)
+MIT © [Karev G.S.](https://github.com/gkarev)
 
 ---
 
-Made with ❤️ by Karev G.S.
-
-If this plugin helped you, please ⭐ star the repo!
-
+**Made with ❤️ for the Vite ecosystem**

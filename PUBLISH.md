@@ -1,54 +1,42 @@
-# 📦 Инструкция по публикации в NPM
+# 📦 NPM Publication Guide
 
-## ✅ Предварительная подготовка
+## Prerequisites
 
-Перед публикацией убедитесь, что:
+1. **NPM account**
+   - Register at https://www.npmjs.com/signup
+   - Verify email
 
-1. **Установлен Node.js и npm**
-   ```bash
-   node --version  # v14.18.0 или выше
-   npm --version
-   ```
-
-2. **Есть аккаунт на npmjs.com**
-   - Зарегистрируйтесь на https://www.npmjs.com/signup
-   - Подтвердите email
-
-3. **Выполнен вход в npm**
+2. **Login to npm**
    ```bash
    npm login
    ```
 
-## 🔍 Проверка перед публикацией
+3. **Check version**
+   ```bash
+   node --version  # v14.18.0+
+   npm --version
+   ```
 
-### 1. Проверьте версию в package.json
+## Pre-Publication Checklist
 
-Текущая версия: **1.1.7**
+### 1. Update Version
 
-Для новой публикации измените версию:
+Current version: **1.3.0**
+
 ```bash
-npm version patch  # 1.1.7 → 1.1.8
-npm version minor  # 1.1.7 → 1.2.0
-npm version major  # 1.1.7 → 2.0.0
+npm version patch  # 1.3.0 → 1.3.1
+npm version minor  # 1.3.0 → 1.4.0
+npm version major  # 1.3.0 → 2.0.0
 ```
 
-### 2. Проверьте содержимое пакета
+### 2. Verify Package Contents
 
-Посмотрите, что будет опубликовано:
+Preview what will be published:
 ```bash
 npm pack --dry-run
 ```
 
-Или создайте тестовый архив:
-```bash
-npm pack
-```
-
-Это создаст файл `vite-svg-sprite-generator-plugin-1.1.7.tgz`
-
-### 3. Проверьте файлы в package.json
-
-В `package.json` указаны файлы для публикации:
+Files included (from `package.json`):
 ```json
 "files": [
   "vite-svg-sprite-generator-plugin.js",
@@ -60,138 +48,116 @@ npm pack
 ]
 ```
 
-### 4. Локальное тестирование
+### 3. Test Locally
 
-Установите пакет локально в тестовом проекте:
 ```bash
-# В папке vite-svg-sprite-generator-pluginnpm pack
+# Create package
+npm pack
 
-# В тестовом проекте
-npm install ../path/to/vite-svg-sprite-generator-plugin-1.1.7.tgz
+# Install in test project
+npm install ../path/to/vite-svg-sprite-generator-plugin-1.3.0.tgz
 ```
 
-## 🚀 Публикация
+### 4. Update Documentation
 
-### Публикация в основной реестр NPM
+- [ ] CHANGELOG.md updated
+- [ ] README.md reviewed
+- [ ] Version bumped in package.json
+- [ ] All changes committed
+
+## Publish
+
+### Standard Publication
 
 ```bash
-# Убедитесь, что вы в папке vite-svg-sprite-generator-plugincd vite-svg-sprite-generator-plugin
-# Публикация
 npm publish
 ```
 
-### Публикация с тегом (например, beta)
+### With 2FA (Recommended)
+
+```bash
+npm publish --otp=123456
+```
+
+### Beta/Tag Publication
 
 ```bash
 npm publish --tag beta
 ```
 
-### Публикация как публичный пакет (если scope)
+## Post-Publication
 
-Если имя пакета начинается с `@scope/`:
-```bash
-npm publish --access public
-```
+### 1. Verify Publication
 
-## ✅ После публикации
+Check package page:
+https://www.npmjs.com/package/vite-svg-sprite-generator-plugin
 
-1. **Проверьте публикацию**
-   - Откройте https://www.npmjs.com/package/vite-svg-sprite-generator-plugin
-   - Убедитесь, что версия обновилась
-
-2. **Проверьте установку**
-   ```bash
-   npm install vite-svg-sprite-generator-plugin
-   ```
-
-3. **Создайте Git тег**
-   ```bash
-   git tag v1.1.7
-   git push origin v1.1.7
-   ```
-
-4. **Обновите CHANGELOG.md** для следующей версии
-
-## 🔄 Обновление пакета
-
-Для публикации новой версии:
-
-1. Внесите изменения в код
-2. Обновите CHANGELOG.md
-3. Обновите версию:
-   ```bash
-   npm version patch  # или minor/major
-   ```
-4. Опубликуйте:
-   ```bash
-   npm publish
-   ```
-5. Создайте Git тег:
-   ```bash
-   git push --tags
-   ```
-
-## 🚨 Отмена публикации
-
-**⚠️ Внимание:** Отменить публикацию можно только в течение 72 часов!
+### 2. Create Git Tag
 
 ```bash
-npm unpublish vite-svg-sprite-generator-plugin@1.1.7
+git tag v1.3.0
+git push origin v1.3.0
 ```
 
-Для удаления всех версий (использовать с осторожностью):
-```bash
-npm unpublish vite-svg-sprite-generator-plugin --force
-```
-
-## 📊 Статистика пакета
-
-Посмотреть статистику загрузок:
-```bash
-npm info vite-svg-sprite-generator-plugin
-```
-
-## 🔐 Безопасность
-
-### 2FA (Двухфакторная аутентификация)
-
-Рекомендуется включить 2FA для публикации:
-
-1. Включите 2FA на npmjs.com в настройках
-2. При публикации введите одноразовый код:
-   ```bash
-   npm publish --otp=123456
-   ```
-
-### Просмотр токенов
-
-```bash
-npm token list
-```
-
-## 📝 Чек-лист перед публикацией
-
-- [ ] Версия обновлена в package.json
-- [ ] CHANGELOG.md актуализирован
-- [ ] README.md проверен и актуален
-- [ ] Код протестирован локально
-- [ ] `npm pack --dry-run` показывает корректные файлы
-- [ ] Выполнен `npm login`
-- [ ] Git коммиты сделаны
-- [ ] Готов к публикации
-
-## 🎉 Готово!
-
-После публикации ваш плагин будет доступен всем через:
+### 3. Test Installation
 
 ```bash
 npm install vite-svg-sprite-generator-plugin
 ```
 
-## 📞 Поддержка
+## Update Workflow
 
-Если возникли проблемы:
-- [NPM Support](https://www.npmjs.com/support)
+For future updates:
+
+```bash
+# 1. Make changes
+# 2. Update CHANGELOG.md
+# 3. Bump version
+npm version patch
+
+# 4. Publish
+npm publish
+
+# 5. Push tags
+git push --tags
+```
+
+## Troubleshooting
+
+### Check package info
+```bash
+npm info vite-svg-sprite-generator-plugin
+```
+
+### List tokens
+```bash
+npm token list
+```
+
+### Unpublish (within 72 hours only)
+```bash
+npm unpublish vite-svg-sprite-generator-plugin@1.3.0
+```
+
+## Security
+
+Enable 2FA in npm settings:
+https://www.npmjs.com/settings/[username]/tfa
+
+## Quick Checklist
+
+- [ ] `npm login` successful
+- [ ] Version updated
+- [ ] CHANGELOG.md updated
+- [ ] README.md reviewed
+- [ ] `npm pack --dry-run` verified
+- [ ] Code tested locally
+- [ ] Git committed
+- [ ] Ready to publish
+
+## Links
+
+- [NPM Package](https://www.npmjs.com/package/vite-svg-sprite-generator-plugin)
+- [GitHub Repository](https://github.com/gkarev/vite-svg-sprite-generator-plugin)
 - [NPM Documentation](https://docs.npmjs.com/)
-- [Package Documentation](https://github.com/german-schneck/vite-svg-sprite-generator-plugin)
-
+- [NPM Support](https://www.npmjs.com/support)

@@ -52,5 +52,8 @@ coverage/
 *.md
 !README.md
 !CHANGELOG.md
+!PUBLISH.md
+!VUE_REACT_SVELTE_GUIDE.md
+!FRAMEWORK_COMPATIBILITY.md
 *.txt
 
