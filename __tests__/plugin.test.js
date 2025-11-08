@@ -23,7 +23,7 @@ describe('vite-svg-sprite-generator-plugin', () => {
   describe('Инициализация плагина', () => {
     it('должен создавать плагин с дефолтными опциями', () => {
       plugin = svgSpritePlugin();
-      expect(plugin.name).toBe('sprite-class');
+      expect(plugin.name).toBe('vite-svg-sprite-generator-plugin');
       expect(plugin.configResolved).toBeDefined();
       expect(plugin.buildStart).toBeDefined();
       expect(plugin.transformIndexHtml).toBeDefined();
@@ -37,7 +37,7 @@ describe('vite-svg-sprite-generator-plugin', () => {
         verbose: true,
         svgoOptimize: false
       });
-      expect(plugin.name).toBe('sprite-class');
+      expect(plugin.name).toBe('vite-svg-sprite-generator-plugin');
     });
   });
 
@@ -75,7 +75,9 @@ describe('vite-svg-sprite-generator-plugin', () => {
 
       expect(() => {
         plugin.configResolved(mockConfig);
-      }).toThrow(/Security.*outside project root/);
+      }).toThrow(expect.objectContaining({
+        message: expect.stringContaining('outside the project root')
+      }));
     });
 
     it('должен разрешать относительные пути внутри проекта', () => {
@@ -107,12 +109,12 @@ describe('vite-svg-sprite-generator-plugin', () => {
 
       expect(() => {
         plugin.configResolved(mockConfig);
-      }).toThrow(/Security.*outside project root/);
+      }).toThrow(expect.objectContaining({
+        message: expect.stringContaining('outside the project root')
+      }));
     });
 
     it('должен обрабатывать preview режим', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
-
       plugin = svgSpritePlugin({
         iconsFolder: 'src/icons',
         verbose: true
@@ -120,16 +122,14 @@ describe('vite-svg-sprite-generator-plugin', () => {
 
       const mockConfig = {
         root: testDir,
-        command: 'serve',
-        mode: 'production',
-        isPreview: true
+        command: 'build',
+        mode: 'production'
       };
 
-      plugin.configResolved(mockConfig);
-
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Preview mode detected'));
-
-      consoleSpy.mockRestore();
+      // В обычном build режиме не должно быть исключений
+      expect(() => {
+        plugin.configResolved(mockConfig);
+      }).not.toThrow();
     });
   });
 
@@ -182,7 +182,7 @@ describe('vite-svg-sprite-generator-plugin', () => {
       consoleSpy.mockRestore();
     });
 
-    it('должен пропускать генерацию в preview режиме', async () => {
+    it('должен корректно работать в dev режиме', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
 
       plugin = svgSpritePlugin({
@@ -193,14 +193,13 @@ describe('vite-svg-sprite-generator-plugin', () => {
       const mockConfig = {
         root: testDir,
         command: 'serve',
-        mode: 'production',
-        isPreview: true
+        mode: 'development'
       };
 
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Preview mode'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Starting sprite generation'));
 
       consoleSpy.mockRestore();
     });
@@ -231,10 +230,11 @@ describe('vite-svg-sprite-generator-plugin', () => {
       await plugin.buildStart();
 
       const mockContext = {
-        server: undefined // production build
+        server: undefined, // production build
+        filename: 'index.html'
       };
 
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
@@ -269,10 +269,11 @@ describe('vite-svg-sprite-generator-plugin', () => {
       await plugin.buildStart();
 
       const mockContext = {
-        server: {} // dev server присутствует
+        server: {}, // dev server присутствует
+        filename: 'index.html'
       };
 
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
@@ -404,8 +405,8 @@ describe('vite-svg-sprite-generator-plugin', () => {
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      const mockContext = { server: undefined };
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       const spriteTag = result.find(tag => tag.tag === 'svg');
       expect(spriteTag).toBeDefined();
@@ -438,8 +439,8 @@ describe('vite-svg-sprite-generator-plugin', () => {
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      const mockContext = { server: undefined };
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       const spriteTag = result.find(tag => tag.tag === 'svg');
       expect(spriteTag).toBeDefined();
@@ -470,8 +471,8 @@ describe('vite-svg-sprite-generator-plugin', () => {
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      const mockContext = { server: undefined };
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       const spriteTag = result.find(tag => tag.tag === 'svg');
       expect(spriteTag).toBeDefined();
@@ -501,8 +502,8 @@ describe('vite-svg-sprite-generator-plugin', () => {
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      const mockContext = { server: undefined };
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       const spriteTag = result.find(tag => tag.tag === 'svg');
       expect(spriteTag).toBeDefined();
@@ -533,12 +534,184 @@ describe('vite-svg-sprite-generator-plugin', () => {
       plugin.configResolved(mockConfig);
       await plugin.buildStart();
 
-      const mockContext = { server: undefined };
-      const result = plugin.transformIndexHtml.handler('<html></html>', mockContext);
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
 
       const spriteTag = result.find(tag => tag.tag === 'svg');
       expect(spriteTag).toBeDefined();
       expect(spriteTag.children).toContain('<symbol id="icon"');
+    });
+  });
+
+  describe('apply() функция и preview режим', () => {
+    it('должен применяться в build режиме', () => {
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons'
+      });
+
+      const mockConfig = {};
+      const mockEnv = { command: 'build' };
+
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      expect(shouldApply).toBe(true);
+    });
+
+    it('должен применяться в dev режиме', () => {
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons'
+      });
+
+      const mockConfig = { mode: 'development' };
+      const mockEnv = { command: 'serve' };
+
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      expect(shouldApply).toBe(true);
+    });
+
+    it('НЕ должен применяться в preview режиме (serve + production)', () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
+
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons',
+        verbose: true
+      });
+
+      const mockConfig = { mode: 'production' };
+      const mockEnv = { command: 'serve' };
+
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      
+      expect(shouldApply).toBe(false);
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Preview mode detected'));
+
+      consoleSpy.mockRestore();
+    });
+
+    it('должен применяться в SSR build режиме (build + production + ssr)', () => {
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons'
+      });
+
+      const mockConfig = { 
+        mode: 'production',
+        build: { ssr: true }
+      };
+      const mockEnv = { command: 'build' };
+
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      expect(shouldApply).toBe(true);
+    });
+
+    it('должен корректно работать с enforce: "pre"', () => {
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons'
+      });
+
+      expect(plugin.enforce).toBe('pre');
+    });
+  });
+
+  describe('Preview режим - интеграционные тесты', () => {
+    it('apply() должен блокировать выполнение в preview, а не configResolved', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation();
+
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons',
+        verbose: true
+      });
+
+      // Preview режим определяется в apply()
+      const mockConfig = { mode: 'production' };
+      const mockEnv = { command: 'serve' };
+      
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      
+      // Плагин не должен применяться
+      expect(shouldApply).toBe(false);
+      
+      // В preview режиме configResolved не должен вызываться вообще
+      // (Vite пропустит плагин если apply вернул false)
+
+      consoleSpy.mockRestore();
+    });
+
+    it('в production build режиме плагин должен работать полностью', async () => {
+      const iconPath = resolve(testDir, 'src/icons/test.svg');
+      await writeFile(iconPath, `
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      `);
+
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons',
+        verbose: false
+      });
+
+      // Production build
+      const mockConfig = { mode: 'production' };
+      const mockEnv = { command: 'build' };
+      
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      expect(shouldApply).toBe(true);
+
+      // Выполняем полный цикл
+      const resolvedConfig = {
+        root: testDir,
+        command: 'build',
+        mode: 'production'
+      };
+
+      plugin.configResolved(resolvedConfig);
+      await plugin.buildStart();
+
+      const mockContext = { server: undefined, filename: 'index.html' };
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      
+      const spriteTag = result.find(tag => tag.tag === 'svg');
+      expect(spriteTag).toBeDefined();
+      expect(spriteTag.children).toContain('<symbol id="test"');
+    });
+
+    it('в dev режиме (serve + development) плагин должен работать с HMR', async () => {
+      const iconPath = resolve(testDir, 'src/icons/dev-icon.svg');
+      await writeFile(iconPath, `
+        <svg viewBox="0 0 24 24">
+          <rect width="20" height="20" x="2" y="2"/>
+        </svg>
+      `);
+
+      plugin = svgSpritePlugin({
+        iconsFolder: 'src/icons',
+        watch: true
+      });
+
+      // Dev режим
+      const mockConfig = { mode: 'development' };
+      const mockEnv = { command: 'serve' };
+      
+      const shouldApply = plugin.apply(mockConfig, mockEnv);
+      expect(shouldApply).toBe(true);
+
+      const resolvedConfig = {
+        root: testDir,
+        command: 'serve',
+        mode: 'development'
+      };
+
+      plugin.configResolved(resolvedConfig);
+      await plugin.buildStart();
+
+      const mockContext = { server: {}, filename: 'index.html' }; // dev server
+      const result = await plugin.transformIndexHtml.handler('<html></html>', mockContext);
+
+      // Должен быть HMR скрипт
+      const scriptTag = result.find(tag => tag.tag === 'script');
+      expect(scriptTag).toBeDefined();
+      expect(scriptTag.children).toContain('import.meta.hot');
     });
   });
 });
