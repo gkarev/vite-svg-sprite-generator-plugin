@@ -1,14 +1,32 @@
 /**
  * Vite SVG Sprite Plugin - TypeScript Definitions (Production-Ready)
- * @version 1.1.1 - Cross-platform path handling with vite.normalizePath
+ * @version 1.3.0 - Aligned with Vite best practices
  */
 
 import type { Plugin } from 'vite';
 
+// HMR Custom Events Type Definitions
+import 'vite/types/customEvent.d.ts';
+
+declare module 'vite/types/customEvent.d.ts' {
+  interface CustomEventMap {
+    /**
+     * Custom HMR event for SVG sprite updates
+     * Fired when icons are added/removed/modified in dev mode
+     */
+    'svg-sprite-update': {
+      /** Complete SVG sprite content */
+      spriteContent: string;
+      /** Number of icons in the sprite */
+      iconCount: number;
+    };
+  }
+}
+
 /**
  * Опции плагина SVG Sprite
  */
-export interface SvgSpritePluginOptions {
+export interface SvgSpriteOptions {
   /**
    * Папка с SVG иконками
    * @default 'src/icons'
@@ -18,14 +36,14 @@ export interface SvgSpritePluginOptions {
 
   /**
    * ID элемента спрайта в DOM
-   * @default 'icon-sprite'
+   * @default 'sprite-id'
    * @example 'my-sprite'
    */
   spriteId?: string;
 
   /**
    * CSS класс спрайта
-   * @default 'svg-sprite'
+   * @default 'sprite-class'
    * @example 'custom-sprite'
    */
   spriteClass?: string;
@@ -37,13 +55,6 @@ export interface SvgSpritePluginOptions {
    * @example '' will generate 'home', 'user'
    */
   idPrefix?: string;
-
-  /**
-   * Enable optimization (legacy option)
-   * @default true
-   * @deprecated Use svgoOptimize instead for better control
-   */
-  optimize?: boolean;
 
   /**
    * Включить отслеживание изменений в dev-режиме
@@ -59,13 +70,13 @@ export interface SvgSpritePluginOptions {
 
   /**
    * Подробное логирование
-   * @default true в development, false в production
+   * @default true (когда NODE_ENV === 'development'), false в остальных случаях
    */
   verbose?: boolean;
 
   /**
    * Оптимизация SVG с помощью SVGO
-   * @default true в production, false в development
+   * @default true (когда NODE_ENV === 'production'), false в остальных случаях
    */
   svgoOptimize?: boolean;
 
@@ -74,16 +85,46 @@ export interface SvgSpritePluginOptions {
    * @default оптимальные настройки для спрайтов
    */
   svgoConfig?: any;
-}
 
-/**
- * Информация об иконке в спрайте
- */
-export interface SpriteIcon {
-  /** Уникальный ID символа */
-  id: string;
-  /** Относительный путь к файлу */
-  file: string;
+  /**
+   * Конвертировать цвета заливки и обводки в currentColor
+   * Позволяет управлять цветом иконок через CSS
+   * @default true
+   * @example
+   * // С currentColor: true
+   * // <path fill="#000" /> → <path fill="currentColor" />
+   * // Теперь можно: .icon { color: red; }
+   */
+  currentColor?: boolean;
+
+  /**
+   * Tree-shaking: включать только используемые иконки
+   * Сканирует HTML/JS/TS файлы проекта и находит все <use href="#iconId">
+   * Работает ТОЛЬКО в production режиме (vite build)
+   * В dev режиме включены все иконки для удобства разработки
+   * @default false
+   * @example
+   * ```ts
+   * // vite.config.ts
+   * svgSpritePlugin({
+   *   iconsFolder: 'src/icons',
+   *   treeShaking: true, // Включить tree-shaking
+   *   verbose: true      // Показать статистику
+   * })
+   * 
+   * // index.html (только эти иконки попадут в спрайт)
+   * <svg><use href="#home"></use></svg>
+   * <svg><use href="#user"></use></svg>
+   * ```
+   */
+  treeShaking?: boolean;
+
+  /**
+   * Расширения файлов для сканирования при tree-shaking
+   * @default ['.html', '.js', '.ts', '.jsx', '.tsx', '.vue', '.svelte']
+   * @example ['.html', '.js', '.ts'] // Сканировать только эти типы файлов
+   */
+  scanExtensions?: string[];
 }
 
 /**
@@ -99,74 +140,12 @@ export interface SpriteIcon {
  *     svgSpritePlugin({
  *       iconsFolder: 'src/icons',
  *       spriteId: 'icon-sprite',
- *       verbose: true
+ *       verbose: true,
+ *       svgoOptimize: true
  *     })
  *   ]
  * });
  * ```
  */
-export default function svgSpritePlugin(options?: SvgSpritePluginOptions): Plugin;
-
-/**
- * Виртуальный модуль для программного доступа к спрайту
- * 
- * @example
- * ```ts
- * import { getIconHref, icons, useIcon } from 'virtual:svg-sprite';
- * 
- * // Получить href для иконки
- * const href = getIconHref('home'); // '#icon-home'
- * 
- * // Список всех доступных иконок
- * console.log(icons); // [{ id: 'icon-home', file: 'src/icons/home.svg' }, ...]
- * 
- * // Создать SVG элемент
- * const svg = useIcon('home', { width: 24, height: 24 });
- * ```
- */
-declare module 'virtual:svg-sprite' {
-  /**
-   * ID спрайта в DOM
-   */
-  export const spriteId: string;
-
-  /**
-   * Список всех доступных иконок
-   */
-  export const icons: SpriteIcon[];
-
-  /**
-   * Получить href для использования в <use>
-   * @param name Имя иконки (без префикса)
-   * @returns href строка, например '#icon-home'
-   * 
-   * @example
-   * ```ts
-   * const href = getIconHref('home');
-   * // '<svg><use href="#icon-home"></use></svg>'
-   * ```
-   */
-  export function getIconHref(name: string): string;
-
-  /**
-   * Создать SVG элемент с иконкой
-   * @param name Имя иконки (без префикса)
-   * @param attrs Атрибуты для SVG элемента
-   * @returns HTML строка с SVG элементом
-   * 
-   * @example
-   * ```ts
-   * const svg = useIcon('home', { 
-   *   width: 24, 
-   *   height: 24,
-   *   fill: 'currentColor'
-   * });
-   * document.body.innerHTML += svg;
-   * ```
-   */
-  export function useIcon(
-    name: string,
-    attrs?: Record<string, string | number>
-  ): string;
-}
+export default function svgSpritePlugin(options?: SvgSpriteOptions): Plugin;
 
